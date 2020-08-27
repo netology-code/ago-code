@@ -1,0 +1,125 @@
+GET http://localhost:9999/orders
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.length === 1);
+  client.global.set("firstId", response.body[0].id);
+  client.global.set("firstRating", response.body[0].film.rating);
+  client.global.set("minRating", client.global.get('firstRating') - 1);
+  client.global.set("maxRating", client.global.get('firstRating') + 1);
+});
+%}
+
+###
+
+GET http://localhost:9999/orders/{{firstId}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.id === client.global.get('firstId'));
+});
+%}
+
+###
+
+GET http://localhost:9999/orders/search?min_rating={{minRating}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.length === 1);
+});
+%}
+
+###
+
+GET http://localhost:9999/orders/search?min_rating={{maxRating}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.length === 0);
+});
+%}
+
+###
+
+POST http://localhost:9999/orders
+Content-Type: application/json
+
+{
+  "id": "",
+  "start": 1601571600000,
+  "film": {
+    "title": "Неистовый 8",
+    "rating": 6.5,
+    "cashback": 0.15,
+    "genres": [
+      "триллер"
+    ]
+  },
+  "seats": [
+    {
+      "row": 1,
+      "number": 3
+    },
+    {
+      "row": 1,
+      "number": 4
+    }
+  ],
+  "price": 200000,
+  "created": 0
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.id !== "");
+});
+%}
+
+###
+
+POST http://localhost:9999/orders
+Content-Type: application/json
+
+{
+  "id": "{{firstId}}",
+  "start": 1601571600000,
+  "film": {
+    "title": "Неистовый 10",
+    "rating": 6.5,
+    "cashback": 0.15,
+    "genres": [
+      "триллер"
+    ]
+  },
+  "seats": [
+    {
+      "row": 1,
+      "number": 3
+    },
+    {
+      "row": 1,
+      "number": 4
+    }
+  ],
+  "price": 400000,
+  "created": 1601571600000
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.price === 400000);
+});
+%}
