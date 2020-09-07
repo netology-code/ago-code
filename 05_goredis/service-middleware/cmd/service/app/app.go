@@ -40,7 +40,11 @@ func NewServer(mux chi.Router, db *mongo.Database, cache *redis.Pool) *Server {
 
 func (s *Server) Init() error {
 	cacheMd := cache.Cache(func(ctx context.Context, path string) ([]byte, error) {
-		return s.FromCache(ctx, path)
+		value, err := s.FromCache(ctx, path)
+		if err != nil && errors.Is(err, redis.ErrNil) {
+			return nil, cache.ErrNotInCache
+		}
+		return value, err
 	}, func(ctx context.Context, path string, data []byte) error {
 		return s.ToCache(context.Background(), path, data)
 	})
