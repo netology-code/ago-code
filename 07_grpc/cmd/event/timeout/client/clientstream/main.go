@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/grpc"
 	eventV1Pb "lectiongrpc/pkg/event/v1"
 	"log"
@@ -47,12 +46,26 @@ func execute(addr string) (err error) {
 	}()
 
 	client := eventV1Pb.NewEventServiceClient(conn)
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
-	response, err := client.Unary(ctx, &eventV1Pb.EventRequest{Id: 1, Payload: "Request"})
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*3)
+	stream, err := client.ClientStream(ctx)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(response.String())
+	for i := 1; i <= 5; i++ {
+		err := stream.Send(&eventV1Pb.EventRequest{
+			Id:      int64(i),
+			Payload: "Request",
+		})
+		if err != nil {
+			return err
+		}
+	}
+	response, err := stream.CloseAndRecv()
+	if err != nil {
+		return err
+	}
+	log.Print(response)
+	log.Print("finished")
 	return nil
 }
