@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 	fineV1Pb "lectiongrpc/pkg/fine/v1"
 	"log"
 	"net"
@@ -49,6 +50,10 @@ func execute(addr string) (err error) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
 	response, err := client.FindByUserId(ctx, &fineV1Pb.FinesRequest{UserId: 2})
 	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			log.Print(st.Code())
+			log.Print(st.Message())
+		}
 		return err
 	}
 
