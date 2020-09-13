@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+  "log"
 	fineV1Pb "lectiongrpc/pkg/fine/v1"
 )
 
@@ -15,6 +16,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) FindByUserId(ctx context.Context, request *fineV1Pb.FinesRequest) (*fineV1Pb.FinesResponse, error) {
+  log.Print(request)
 	if request.UserId == 1 {
 		return &fineV1Pb.FinesResponse{
 			UserId: 1,

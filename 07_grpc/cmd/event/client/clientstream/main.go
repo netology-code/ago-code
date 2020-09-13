@@ -3,7 +3,8 @@ package main
 import (
 	"context"
 	"google.golang.org/grpc"
-	fineV1Pb "lectiongrpc/pkg/fine/v1"
+	"io"
+	eventV1Pb "lectiongrpc/pkg/event/v1"
 	"log"
 	"net"
 	"os"
@@ -45,13 +46,23 @@ func execute(addr string) (err error) {
 		}
 	}()
 
-	client := fineV1Pb.NewFineServiceClient(conn)
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
-	response, err := client.FindByUserId(ctx, &fineV1Pb.FinesRequest{UserId: 2})
+	client := eventV1Pb.NewEventServiceClient(conn)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second * 10)
+	stream, err := client.ServerStream(ctx, &eventV1Pb.EventRequest{Id: 1, Payload: "Request"})
 	if err != nil {
 		return err
 	}
 
-	log.Print(response)
+	for {
+		response, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
+		log.Print(response)
+	}
+	log.Print("finished")
 	return nil
 }
