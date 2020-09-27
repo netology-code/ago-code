@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  backend:
+    build:
+      context: services/backend
+    image: backend
+    ports:
+      - 9999:9999
+  auth:
+    build:
+      context: services/auth
+    image: auth
+    environment:
+      - APP_DSN=postgres://app:pass@authdb:5432/db
+  authdb:
+    image: postgres:12.3-alpine
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=app
+      - POSTGRES_DB=db
+    volumes:
+      - ./services/auth/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+  transactions-api:
+    build:
+      context: services/transactions-api
+    image: transactions-api
+  transactions:
+    build:
+      context: services/transactions
+    image: transactions
+    environment:
+      - APP_DSN=postgres://app:pass@transactionsdb:5432/db
+  transactionsdb:
+    image: postgres:12.3-alpine
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=app
+      - POSTGRES_DB=db
+    volumes:
+      - ./services/transactions/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
