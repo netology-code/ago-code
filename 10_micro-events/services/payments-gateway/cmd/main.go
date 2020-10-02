@@ -105,6 +105,7 @@ func waitForKafka(brokerURL string, group string) (sarama.ConsumerGroup, sarama.
 		producer, err := sarama.NewSyncProducer([]string{brokerURL}, config)
 		if err != nil {
 			log.Print(err)
+			time.Sleep(time.Second)
 			continue
 		}
 

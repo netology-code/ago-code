@@ -140,6 +140,7 @@ func waitForKafka(brokerURL string, group string) (sarama.ConsumerGroup, error) 
 		consumerGroup, err := sarama.NewConsumerGroup([]string{brokerURL}, group, config)
 		if err != nil {
 			log.Print(err)
+			time.Sleep(time.Second)
 			continue
 		}
 
