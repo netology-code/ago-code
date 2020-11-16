@@ -1,0 +1,50 @@
+### Получение токена под user'ом
+
+PUT http://localhost:9999/users
+Content-Type: application/x-www-form-urlencoded
+
+login=user&password=secret
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.global.set("token", response.body.token);
+});
+%}
+
+### Получаем доступ к public
+
+GET http://localhost:9999/public
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.body === "public", "Expected 'public' but received '" + response.body + "'");
+});
+%}
+
+### Получаем доступ к admin
+
+GET http://localhost:9999/admin
+Authorization: {{token}}
+
+> {%
+client.test("Request failed", function() {
+  client.assert(response.status === 403, "Response status is not 403");
+});
+%}
+
+### Получаем доступ к user
+
+GET http://localhost:9999/user
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.body === "user", "Expected 'user' but received '" + response.body + "'");
+});
+%}
+
