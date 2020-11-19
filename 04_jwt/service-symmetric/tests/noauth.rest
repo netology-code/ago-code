@@ -1,0 +1,44 @@
+### Невалидная аутентификация
+
+PUT http://localhost:9999/users
+Content-Type: application/x-www-form-urlencoded
+
+login=admin&password=admin
+
+> {%
+client.test("Request failed", function() {
+  client.assert(response.status === 400, "Response status is not 400");
+});
+%}
+
+### Получаем доступ к public
+
+GET http://localhost:9999/public
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.body === "public", "Expected 'public' but received '" + response.body + "'");
+});
+%}
+
+### Получаем доступ к admin
+
+GET http://localhost:9999/admin
+
+> {%
+client.test("Request failed", function() {
+  client.assert(response.status === 401, "Response status is not 401");
+});
+%}
+
+### Получаем доступ к user
+
+GET http://localhost:9999/user
+
+> {%
+client.test("Request failed", function() {
+  client.assert(response.status === 401, "Response status is not 401");
+});
+%}
+

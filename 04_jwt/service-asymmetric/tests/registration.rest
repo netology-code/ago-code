@@ -1,0 +1,15 @@
+### Получение токена под админом
+
+POST http://localhost:9999/users
+Content-Type: application/x-www-form-urlencoded
+
+login=newbie3&password=secret
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.global.set("token", response.body.token);
+});
+%}
+
