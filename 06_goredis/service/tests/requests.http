@@ -1,0 +1,9 @@
+http://localhost:9999/films
+
+###
+
+http://localhost:9999/films/1
+
+###
+
+http://localhost:9999/films/search?min_rating=8.0
