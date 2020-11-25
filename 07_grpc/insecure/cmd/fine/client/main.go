@@ -48,7 +48,7 @@ func execute(addr string) (err error) {
 
 	client := fineV1Pb.NewFineServiceClient(conn)
 	ctx, _ := context.WithTimeout(context.Background(), time.Second)
-	response, err := client.FindByUserId(ctx, &fineV1Pb.FinesRequest{UserId: 2})
+	response, err := client.FindByUserId(ctx, &fineV1Pb.FinesRequest{UserId: 1})
 	if err != nil {
 		if st, ok := status.FromError(err); ok {
 			log.Print(st.Code())
