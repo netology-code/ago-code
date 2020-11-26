@@ -1,0 +1,36 @@
+### меняем логин и пароль на токен на сервисе auth
+
+PUT http://localhost:8888/users
+Content-Type: application/x-www-form-urlencoded
+
+login=user&password=secret
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.global.set("token", response.body.token);
+});
+%}
+
+### используем токен для запроса (чаще пишут Authorization: Bearer {{token}}, но мы для простоты сделали без Bearer)
+
+GET http://localhost:9999/api/transactions
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Пробуем запрос без токена
+
+GET http://localhost:9999/api/transactions
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 401, "Response status is not 401");
+});
+%}
