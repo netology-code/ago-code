@@ -37,5 +37,3 @@
 4.2 [ ] [Kubernetes: Stateless сервисы](14_kube)
 
 4.3 [ ] [Kubernetes: Stateful сервисы](15_kube)
-
-По всем вопросам: coursar
