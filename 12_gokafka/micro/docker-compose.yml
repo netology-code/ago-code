@@ -1,0 +1,78 @@
+version: '3.7'
+services:
+  backend:
+    build:
+      context: services/backend
+    image: backend
+    ports:
+      - 9999:9999
+    depends_on:
+      - auth
+      - payments-api
+      - transactions-api
+  auth:
+    build:
+      context: services/auth
+    image: auth
+    environment:
+      - APP_DSN=postgres://app:pass@authdb:5432/db
+    depends_on:
+      - authdb
+  authdb:
+    image: postgres:12.3-alpine
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=app
+      - POSTGRES_DB=db
+    volumes:
+      - ./services/auth/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+  payments-api:
+    build:
+      context: services/payments-api
+    image: payments-api
+    environment:
+      - APP_BROKER_URL=kafka:9092
+    depends_on:
+      - kafka
+  payments-gateway:
+    build:
+      context: services/payments-gateway
+    image: payments-gateway
+    environment:
+      - APP_BROKER_URL=kafka:9092
+    depends_on:
+      - kafka
+  zookeeper:
+    image: 'bitnami/zookeeper:3.6.2'
+    environment:
+    - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka:2.6.0'
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+  transactions-api:
+    build:
+      context: services/transactions-api
+    image: transactions-api
+    depends_on:
+      - transactions
+  transactions:
+    build:
+      context: services/transactions
+    image: transactions
+    environment:
+      - APP_DSN=postgres://app:pass@transactionsdb:5432/db
+    depends_on:
+      - transactionsdb
+      - kafka
+  transactionsdb:
+    image: postgres:12.3-alpine
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=app
+      - POSTGRES_DB=db
+    volumes:
+      - ./services/transactions/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
