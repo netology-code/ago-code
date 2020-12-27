@@ -26,9 +26,9 @@
 
 3.2 [x] [Микросервисы: Synchronous Communication](10_micro)
 
-3.3 [x] [Микросервисы: Event-Driven Communication (часть 1)](11_micro)
+3.3 [x] [Микросервисы: Event-Driven Communication (часть 1)](11_kafka)
 
-3.4 [ ] [Микросервисы: Event-Driven Communication (часть 2)](12_micro)
+3.4 [ ] [Микросервисы: Event-Driven Communication (часть 2)](12_gokafka)
 
 Блок 4. Kubernetes
 
