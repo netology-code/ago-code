@@ -32,7 +32,7 @@
 
 Блок 4. Kubernetes
 
-4.1 [ ] [Kubernetes: основы](13_kube)
+4.1 [x] [Kubernetes: основы](13_kube)
 
 4.2 [ ] [Kubernetes: Stateless сервисы](14_kube)
 
