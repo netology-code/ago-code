@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  selector:
+    matchLabels:
+      app: ui
+      tier: frontend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: ui
+        tier: frontend
+    spec:
+      containers:
+        - name: ui
+          image: docker.pkg.github.com/netology-code/ago-k8s-stateless/ui:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: github-packages
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+spec:
+  type: LoadBalancer
+  selector:
+    app: ui
+    tier: frontend
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasher
+spec:
+  selector:
+    matchLabels:
+      app: hasher
+      tier: backend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: hasher
+        tier: backend
+    spec:
+      containers:
+        - name: hasher
+          image: docker.pkg.github.com/netology-code/ago-k8s-stateless/hasher:latest
+          ports:
+            - containerPort: 9999
+      imagePullSecrets:
+        - name: github-packages
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hasher
+spec:
+  selector:
+    app: hasher
+    tier: backend
+  ports:
+    - port: 9999
