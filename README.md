@@ -36,4 +36,4 @@
 
 4.2 [x] [Kubernetes: Stateless сервисы](14_kube)
 
-4.3 [ ] [Kubernetes: Stateful сервисы](15_kube)
+4.3 [x] [Kubernetes: Stateful сервисы](15_kube)
