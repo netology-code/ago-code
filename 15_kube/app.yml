@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+      tier: frontend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: web
+        tier: frontend
+    spec:
+      containers:
+        - name: web
+          image: docker.pkg.github.com/netology-code/ago-k8s-stateful/web:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: github-packages
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  type: LoadBalancer
+  selector:
+    app: web
+    tier: frontend
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: filer
+spec:
+  selector:
+    matchLabels:
+      app: filer
+      tier: backend
+  serviceName: filer
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: filer
+        tier: backend
+    spec:
+      containers:
+        - name: filer
+          image: docker.pkg.github.com/netology-code/ago-k8s-stateful/filer:latest
+          ports:
+            - containerPort: 9999
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      imagePullSecrets:
+        - name: github-packages
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filer
+spec:
+  selector:
+    app: filer
+    tier: backend
+  ports:
+    - port: 9999

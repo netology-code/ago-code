@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: echo-pod
+  labels:
+    app: echo
+spec:
+  containers:
+    - name: echo-ctr
+      image: k8s.gcr.io/echoserver:1.4
+      ports:
+        - containerPort: 8080
